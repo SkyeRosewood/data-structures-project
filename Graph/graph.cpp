@@ -28,14 +28,14 @@ int Graph<T>::get_vertex_index(const Vertex<T>& ver){
 }
 
 template <typename T>
-void Graph<T>::add_edge(const Vertex<T>& ver1, const Vertex<T>& ver2, int weight){
+void Graph<T>::add_edge(const Vertex<T>& ver1, const Vertex<T>& ver2, int cost, int distance){
     int i1=get_vertex_index(ver1);
     int i2=get_vertex_index(ver2);
     if(i1==-1||i2==-1){
         throw std::string("Add_edge: incorrect vertices");
     }
-    Edge v(i1, i2, weight);
-    Edge v2(i2, i1, weight);
+    Edge v(i1, i2, cost, distance);
+    Edge v2(i2, i1, cost, distance);
     edges[i1].push_back(v);
     if(i1!=i2){
         edges[i2].push_back(v2);
@@ -48,7 +48,7 @@ void Graph<T>::print() const{
         std::cout<<"{ "<<vertices[i].getData()<<": ";
         for(int j=0;j<edges[i].size();j++){
             std::cout<<'{'<<vertices[edges[i][j].dest].getData()<<", ";
-            std::cout<<edges[i][j].weight<<"} ";
+            std::cout<<edges[i][j].cost<<"} ";
         }
         std::cout<<" }\n";
     }
@@ -138,7 +138,7 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
         distances[i]=(i == i_src) ? 0 : INT_MAX;
     }
 
-    MinHeap<Edge> heap;
+    MinHeap<Edge, CompareEdgeByDistance> heap;
     int vertices_visited=0;
     int cur_ver=i_src;
 
@@ -158,7 +158,7 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
                 heap.insert(edges[i][j]);
     
                 // Calculate the new distance from the source to the adjacent vertex through the current vertex
-                int dist_from_source=distances[i]+edges[i][j].weight;
+                int dist_from_source=distances[i]+edges[i][j].cost;
     
                 // If this new distance is shorter than the previously known distance to the adjacent vertex, update it
                 if(dist_from_source<distances[i_adjacent_ver]){
@@ -174,10 +174,10 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
             }
         }
     
-        // After exploring all neighbors, get the edge with the smallest weight from the heap
+        // After exploring all neighbors, get the edge with the smallest cost from the heap
         Edge e=heap.delete_min();
     
-        // Update the current vertex to the destination of the edge with the smallest weight
+        // Update the current vertex to the destination of the edge with the smallest cost
         cur_ver=e.dest;
     
         // Mark the current vertex as visited
@@ -188,4 +188,9 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
     }
     clean_visited();
     return distances[i_dest];
+}
+template<typename T>
+int Graph<T>::kruskal_algorithim(const Vertex<T>& src, const Vertex<T>& dest){
+    
+    return 0;
 }

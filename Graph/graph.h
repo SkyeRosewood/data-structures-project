@@ -10,13 +10,14 @@ class Graph{
         Graph() {}
 
         void insert_vertex(const Vertex<T>& ver);
-        void add_edge(const Vertex<T>& ver1, const Vertex<T>& ver2, int weight); //connect ver1 with ver2
+        void add_edge(const Vertex<T>& ver1, const Vertex<T>& ver2, int cost, int distance); //connect ver1 with ver2
 
         void print() const;
 
         void DFS(Vertex<T>& ver);
         void BFS(Vertex<T>& ver);
         int dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest);
+        int kruskal_algorithim(const Vertex<T>& src, const Vertex<T>& dest);
 
     private:
         std::vector<Vertex<T>> vertices; //nodes

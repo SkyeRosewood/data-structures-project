@@ -2,7 +2,14 @@
 #define MINHEAP_H
 #include <vector>
 
-template <typename T>
+template<typename T>
+struct DefaultCompare {
+    bool operator()(const T& a, const T& b) const{
+        return a<b;
+    }
+};
+
+template <typename T, typename Compare =DefaultCompare<T>>
 class MinHeap{
     public:
         MinHeap() {}
@@ -13,6 +20,7 @@ class MinHeap{
 
     private:
         std::vector<T> data;
+        Compare comp;
         void swap(T& v1, T& v2){
             T tmp=v1;
             v1=v2;

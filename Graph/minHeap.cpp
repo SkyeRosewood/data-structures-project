@@ -1,19 +1,19 @@
 #include "minHeap.h"
 #include <iostream>
 
-template<typename T>
-void MinHeap<T>::insert(const T& val){
+template<typename T, typename Compare>
+void MinHeap<T, Compare>::insert(const T& val){
     data.push_back(val);
     int n=data.size()-1; //index of the last node
     //percolate UP
-    while(data[n]<data[(n-1)/2]){
+    while(n>0 && comp(data[n],data[(n-1)/2])){
         swap(data[n], data[(n-1)/2]);
         n=(n-1)/2; //make cur index equal to the parent index
     }
 }
 
-template<typename T>
-void MinHeap<T>::print() const{
+template<typename T, typename Compare>
+void MinHeap<T, Compare>::print() const{
     int cur_level=0;
     int new_level=1;
 
@@ -29,8 +29,8 @@ void MinHeap<T>::print() const{
     std::cout<<"\n----------------------------\n";
 }
 
-template<typename T>
-T MinHeap<T>::delete_min(){
+template<typename T, typename Compare>
+T MinHeap<T, Compare>::delete_min(){
     if(data.empty()){
         throw std::string("delete_min: Empty Heap\n");
     }    
@@ -44,8 +44,8 @@ T MinHeap<T>::delete_min(){
     return res;
 }
 
-template<typename T>
-void MinHeap<T>::percolate_down(int i){
+template<typename T, typename Compare>
+void MinHeap<T, Compare>::percolate_down(int i){
     if(data.empty()||i>=data.size()||i<0){
         return;
     }
@@ -65,7 +65,7 @@ void MinHeap<T>::percolate_down(int i){
             kids_min_index=parent_index*2+1;
         }
         //check is the smallest kid smaller than the parent
-        if(data[kids_min_index]<data[parent_index]){
+        if(comp(data[kids_min_index],data[parent_index])){
             swap(data[parent_index], data[kids_min_index]);
             parent_index=kids_min_index;
         }
@@ -75,16 +75,16 @@ void MinHeap<T>::percolate_down(int i){
     } while(1);
 }
 
-template<typename T>
-int MinHeap<T>::min_index(int i1, int i2) const{
+template<typename T, typename Compare>
+int MinHeap<T, Compare>::min_index(int i1, int i2) const{
     if(i1>=data.size()||i2>=data.size()||i1<0||i2<0){
         throw std::string ("min_index: incorrect index");
     }
     return (data[i1]<data[i2] ? i1 : i2);
 }
 
-template<typename T>
-MinHeap<T>::MinHeap(std::vector<T> v){
+template<typename T,typename Compare>
+MinHeap<T, Compare>::MinHeap(std::vector<T> v){
     data=v;  //copy input vector into heap storage
 
     //start from last non-leaf node and percolate down
