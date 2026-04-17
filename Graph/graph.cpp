@@ -1,8 +1,9 @@
 #include "graph.h"
 #include "minHeap.h"
 #include "minHeap.cpp"
+#include "queue.h"
+#include "queue.cpp"
 
-#include <queue>
 #include<unistd.h> 
 #include <iostream>
 #define INT_MAX 1000
@@ -65,7 +66,7 @@ template <typename T>
 void print_queue(std::queue<Vertex<T>> q){
   while(!q.empty()){
     std::cout<<q.front().getData()<<" ";
-    q.pop();
+    q.dequeue();
   }
   std::cout<<std::endl;
 }
@@ -79,7 +80,7 @@ void Graph<T>::BFS(Vertex<T>& ver){
         throw std::string("BFS: Vertex is not in the graph");
     }
     std::queue<int> q;
-    q.push(i);
+    q.enqueue(i);
     vertices[i].setVisited(true);
 
     while(!q.empty()){
@@ -89,10 +90,10 @@ void Graph<T>::BFS(Vertex<T>& ver){
             int adjacent_ver=edges[i][j].dest;
             if(vertices[adjacent_ver].getVisited()==false){
                 vertices[adjacent_ver].setVisited(true);
-                q.push(adjacent_ver);
+                q.enqueue(adjacent_ver);
             }
         }
-        q.pop();
+        q.dequeue();
     }
     clean_visited();
 }
