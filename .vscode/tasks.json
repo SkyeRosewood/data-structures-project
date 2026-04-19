@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-std=c++17",
+                "-Wall",
+                "-g",
+                "-o",
+                "${workspaceFolder}/airport_system",
+                "${workspaceFolder}/main.cpp",
+                "${workspaceFolder}/graph.cpp",
+                "${workspaceFolder}/csvReader.cpp",
+                "${workspaceFolder}/dfs.cpp",
+                "${workspaceFolder}/bfs.cpp",
+                "${workspaceFolder}/primMST.cpp",
+                "${workspaceFolder}/kruskalMST.cpp",
+                "${workspaceFolder}/minHeap.cpp",
+                "${workspaceFolder}/stack.cpp",
+                "${workspaceFolder}/queue.cpp"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
