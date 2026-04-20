@@ -10,8 +10,8 @@
 #include <string>
 using namespace std;
 
-// ─── Print helpers ────────────────────────────────────────────────────────────
 
+// print helpers
 static void sep(const string& title) {
     cout << "\n" << string(60, '=') << "\n";
     cout << "  " << title << "\n";
@@ -43,21 +43,24 @@ static void printTraversal(const vector<string>& order, const string& label) {
     cout << "\n";
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+//Main
 
 int main() {
+    // Initialize the primary graph structure and populate it from the dataset
     Graph graph;
     if (!CSVReader::load("airports.csv", graph)) return 1;
     cout << "Loaded " << graph.getVertexCount() << " airports, "
          << graph.getEdgeCount() << " flights.\n";
 
     // ── Task 2: Shortest path between two airports ────────────────────────────
+    // Standard pathfinding using Dijkstra's to find the absolute cheapest route
     sep("TASK 2 — Shortest Path Between Two Airports");
     printPath(graph.shortestPath("ATL", "MIA"), "ATL", "MIA");
     printPath(graph.shortestPath("MIA", "ORD"), "MIA", "ORD");
     printPath(graph.shortestPath("ORD", "BOS"), "ORD", "BOS");
 
     // ── Task 3: Shortest paths to all airports in a state ────────────────────
+    // Batch pathfinding: tests the ability to filter destinations by state
     sep("TASK 3 — Shortest Paths from ATL to all FL airports");
     {
         auto results = graph.shortestPathsToState("ATL", "FL");
@@ -78,12 +81,14 @@ int main() {
     }
 
     // ── Task 4: Shortest path with exact number of stops ─────────────────────
+    //Tests paths that must strictly adhere to a step/depth count
     sep("TASK 4 — Shortest Path with Exact Stops");
     printPath(graph.shortestPathWithStops("ATL", "MIA",  1), "ATL", "MIA (1 stop)");
     printPath(graph.shortestPathWithStops("MIA", "ORD",  1), "MIA", "ORD (1 stop)");
     printPath(graph.shortestPathWithStops("ORD", "BOS",  2), "ORD", "BOS (2 stops)");
 
     // ── Task 5: Connection counts ─────────────────────────────────────────────
+    // Analyzes vertex degrees (in-degree and out-degree) to identify airports with most connections
     sep("TASK 5 — Top 10 Airports by Total Connections");
     auto conns = graph.getConnectionCounts();
     cout << left << setw(10) << "Airport"
@@ -99,12 +104,14 @@ int main() {
              << setw(10) << conns[i].total << "\n";
 
     // ── Task 6 + 7 + 8 ───────────────────────────────────────────────────────
+    // Flights are inherently directed, but MST algorithms require undirected edges
     sep("TASK 6 — Building Undirected Graph G_u");
     graph.buildUndirectedGraph();
     cout << "  G_u built. Connected: " << (graph.isConnected() ? "Yes" : "No") << "\n";
     if (!graph.isConnected())
         cout << "  (Graph is disconnected — Prim's and Kruskal's will produce spanning forests)\n";
 
+    // Compare two different MST algorithms to ensure they compute identical total costs
     sep("TASK 7 — Prim's MST (first 10 edges shown)");
     {
         MSTResult mst = PrimMST::run(graph);
@@ -131,13 +138,13 @@ int main() {
         cout << "  Total Cost: $" << fixed << setprecision(2) << mst.totalCost << "\n";
     }
 
-    // ── DFS ──────────────────────────────────────────────────────────────────
+    // ── DFS & BFS ────────────────────────────────────────────────────────────
+    // Standard unweighted network traversals to verify graph connectivity and exploration order
     sep("DFS Traversal");
     printTraversal(DFS::run(graph, "ATL"), "DFS from ATL");
     printTraversal(DFS::run(graph, "MIA"), "DFS from MIA");
     printTraversal(DFS::run(graph, "ORD"), "DFS from ORD");
 
-    // ── BFS ──────────────────────────────────────────────────────────────────
     sep("BFS Traversal");
     printTraversal(BFS::run(graph, "ATL"), "BFS from ATL");
     printTraversal(BFS::run(graph, "MIA"), "BFS from MIA");
