@@ -40,14 +40,16 @@ int Stack::peek(){
 }
 
 //pop function
-void Stack::pop(){
+int Stack::pop(){
     if(isEmpty()){
         cout<<"\nStack Underflow"<<endl;
         exit(1);
     }
     Node* temp=top;
+    int item=top->data;
     top=top->next;
     delete temp;
+    return item;
 }
 
 //print stack

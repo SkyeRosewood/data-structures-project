@@ -19,7 +19,7 @@ class Stack{
         ~Stack();         //destructor
 
         void push(int data); //needed class functions
-        void pop();
+        int pop();
         int peek();
         bool isEmpty();
         void printList();
