@@ -126,7 +126,7 @@ int main() {
     graph.buildUndirectedGraph();
     cout << "  G_u built. Connected: " << (graph.isConnected() ? "Yes" : "No") << "\n";
     if (!graph.isConnected())
-        cout << "  (Graph is disconnected — Prim's and Kruskal's will produce spanning forests)\n";
+        cout << "  (Graph is disconnected — Prim's will fail, Kruskal's will produce a spanning forest)\n";
 
     // Compare two different MST algorithms to ensure they compute identical total costs
     sep("TASK 7 — Prim's MST (first 10 edges shown)");
