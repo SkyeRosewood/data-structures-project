@@ -126,7 +126,7 @@ int main() {
     graph.buildUndirectedGraph();
     cout << "  G_u built. Connected: " << (graph.isConnected() ? "Yes" : "No") << "\n";
     if (!graph.isConnected())
-        cout << "  (Graph is disconnected — Prim's will fail, Kruskal's will produce a spanning forest)\n";
+        cout << "  (Graph is disconnected — Prim's basic algorithm will fail, Kruskal's will produce a spanning forest)\n";
 
     // Compare two different MST algorithms to ensure they compute identical total costs
     sep("TASK 7 — Prim's MST (first 10 edges shown)");
@@ -134,7 +134,13 @@ int main() {
         MSTResult mst = PrimMST::run(graph);
         // Correctly fails out and provides the required message if graph is disconnected
         if (!mst.isConnected) {
-            cout << "  MST cannot be formed.\n";
+            cout << "  MST cannot be formed normally, but by selecting a different tree once it runs out of connected components this works.\n";
+            int show = (int)mst.edges.size() < 10 ? (int)mst.edges.size() : 10;
+            for (int i = 0; i < show; ++i)
+                cout << "    " << mst.edges[i].from << " - " << mst.edges[i].to
+                     << "  $" << fixed << setprecision(2) << mst.edges[i].cost << "\n";
+            cout << "  ... (" << mst.edges.size() << " edges total)\n";
+            cout << "  Total Cost: $" << fixed << setprecision(2) << mst.totalCost << "\n";
         } else {
             int show = (int)mst.edges.size() < 10 ? (int)mst.edges.size() : 10;
             for (int i = 0; i < show; ++i)
