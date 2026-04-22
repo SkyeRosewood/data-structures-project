@@ -1,65 +1,47 @@
 #include "stack.h"
+using namespace std;
 
-//constructor
-Stack::Stack(){
-    top=nullptr;
-}
-//destructor
-Stack::~Stack(){
-    while(!isEmpty()){
-        pop();
-    }
-}
+StackNode::StackNode(int data) : data(data), next(nullptr) {}
 
-//push function
-void Stack::push(int data){
-    Node* temp=new Node();
-    if(!temp){
-        cout<<"\nStack Overflow";
-        exit(1);
-    }
-    temp->data=data;
-    temp->next=top;
-    top=temp;
-}
+// Initializes an empty Last-In-First-Out (LIFO) structure
+Stack::Stack() : top(nullptr), count(0) {}
 
-//check if empty
-bool Stack::isEmpty(){
-    return top==nullptr;
-}
-
-//peek function
-int Stack::peek(){
-    if(!isEmpty()){
-        return top->data;
-    }
-    else{
-        cout<<"\nStack is empty";
-        exit(1);
+//destructor for the stack
+Stack::~Stack() {
+    while (top) { 
+        StackNode* t = top; 
+        top = top->next; 
+        delete t; 
     }
 }
 
-//pop function
-void Stack::pop(){
-    if(isEmpty()){
-        cout<<"\nStack Underflow"<<endl;
-        exit(1);
-    }
-    Node* temp=top;
-    top=top->next;
-    delete temp;
+// inserts to the head of the list
+void Stack::push(int data) {
+    StackNode* node = new StackNode(data);
+    node->next = top; 
+    top = node; 
+    ++count;
 }
 
-//print stack
-void Stack::printList(){
-    if(isEmpty()){
-        cout<<"\nStack is empty";
-        return;
-    }
-    Node* temp=top;
-    while(temp!=nullptr){
-        cout<<temp->data<<" -> ";
-        temp=temp->next;
-    }
-    cout<<"NULL"<<endl;
+// Removes the head node and returns its value in O(1) time
+int Stack::pop() {
+    if (isEmpty()) throw underflow_error("Stack is empty");
+    
+    StackNode* t = top; 
+    int v = t->data;
+    top = top->next; 
+    
+    delete t; 
+    --count; 
+    return v;
 }
+
+// checks the stack's state
+int Stack::peek() const { 
+    if(isEmpty()) throw underflow_error("Stack is empty"); 
+    return top->data; 
+}
+
+bool Stack::isEmpty() const { return top == nullptr; }
+
+int Stack::size() const { return count; }

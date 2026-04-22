@@ -1,28 +1,29 @@
 #ifndef STACK_H
 #define STACK_H
-#include <iostream>
-using namespace std;
 
-//node structure
-struct Node{
+#include <stdexcept>
+//defines individual elements of the stack's linked list
+struct StackNode {
     int data;
-    Node* next;
+    StackNode* next;
+    explicit StackNode(int data);
 };
+//LIFO data structure
+class Stack {
+public:
+    Stack();
+    ~Stack();
+    //operations
+    void push(int data);
+    int pop();
+    int peek() const;
+    //checks the stack's state
+    bool isEmpty() const;
+    int size() const;
 
-//stack class using singly linked list
-class Stack{
-    private:
-        Node* top;
-
-    public:
-        Stack();          //constructor
-        ~Stack();         //destructor
-
-        void push(int data); //needed class functions
-        void pop();
-        int peek();
-        bool isEmpty();
-        void printList();
+private:
+    StackNode* top;//makes popping quicker
+    int count;//size
 };
 
 #endif
