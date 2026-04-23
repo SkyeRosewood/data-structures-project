@@ -18,10 +18,10 @@ static void sep(const string& title) {
     cout << string(60, '=') << "\n";
 }
 
-static void printPath(const PathResult& pr,
-                      const string& origin, const string& dest) {
+// Used for Tasks 2 and 3
+static void printPath(const PathResult& pr, const string& origin, const string& dest) {
     if (!pr.found) {
-        cout << "  No path found: " << origin << " -> " << dest << "\n";
+        cout << "  Shortest route from " << origin << " to " << dest << ": None\n";
         return;
     }
     cout << "  Route: ";
@@ -32,6 +32,23 @@ static void printPath(const PathResult& pr,
     cout << fixed << setprecision(2)
          << "  |  Distance: " << pr.distance
          << " mi  |  Cost: $" << pr.cost << "\n";
+}
+
+// Specifically handles the exact text formatting required for Task 4
+static void printPathWithStops(const PathResult& pr, const string& origin, const string& dest, int stops) {
+    if (!pr.found) {
+        cout << "  Shortest route from " << origin << " to " << dest << " with " << stops << " stops: None\n";
+        return;
+    }
+    cout << "  Shortest route from " << origin << " to " << dest << " with " << stops << " stops: ";
+    for (int i = 0; i < (int)pr.path.size(); ++i) {
+        if (i > 0) cout << " -> ";
+        cout << pr.path[i];
+    }
+    // Dropping decimals here to perfectly match the Task 4 sample output
+    cout << fixed << setprecision(0)
+         << ". The length is " << pr.distance
+         << ". The cost is " << pr.cost << ".\n";
 }
 
 static void printTraversal(const vector<string>& order, const string& label) {
@@ -48,7 +65,7 @@ static void printTraversal(const vector<string>& order, const string& label) {
 int main() {
     // Initialize the primary graph structure and populate it from the dataset
     Graph graph;
-    if (!CSVReader::load("airports.csv", graph)) return 1;
+    if (!CSVReader::load("airports.txt", graph)) return 1;
     cout << "Loaded " << graph.getVertexCount() << " airports, "
          << graph.getEdgeCount() << " flights.\n";
 
@@ -83,9 +100,9 @@ int main() {
     // ── Task 4: Shortest path with exact number of stops ─────────────────────
     //Tests paths that must strictly adhere to a step/depth count
     sep("TASK 4 — Shortest Path with Exact Stops");
-    printPath(graph.shortestPathWithStops("ATL", "MIA",  1), "ATL", "MIA (1 stop)");
-    printPath(graph.shortestPathWithStops("MIA", "ORD",  1), "MIA", "ORD (1 stop)");
-    printPath(graph.shortestPathWithStops("ORD", "BOS",  2), "ORD", "BOS (2 stops)");
+    printPathWithStops(graph.shortestPathWithStops("ATL", "MIA",  1), "ATL", "MIA", 1);
+    printPathWithStops(graph.shortestPathWithStops("MIA", "ORD",  1), "MIA", "ORD", 1);
+    printPathWithStops(graph.shortestPathWithStops("ORD", "BOS",  2), "ORD", "BOS", 2);
 
     // ── Task 5: Connection counts ─────────────────────────────────────────────
     // Analyzes vertex degrees (in-degree and out-degree) to identify airports with most connections
@@ -109,27 +126,40 @@ int main() {
     graph.buildUndirectedGraph();
     cout << "  G_u built. Connected: " << (graph.isConnected() ? "Yes" : "No") << "\n";
     if (!graph.isConnected())
-        cout << "  (Graph is disconnected — Prim's and Kruskal's will produce spanning forests)\n";
+        cout << "  (Graph is disconnected — Prim's basic algorithm will fail, Kruskal's will produce a spanning forest)\n";
 
     // Compare two different MST algorithms to ensure they compute identical total costs
     sep("TASK 7 — Prim's MST (first 10 edges shown)");
     {
         MSTResult mst = PrimMST::run(graph);
-        if (!mst.isConnected)
-            cout << "  (Spanning forest — graph is disconnected)\n";
-        int show = (int)mst.edges.size() < 10 ? (int)mst.edges.size() : 10;
-        for (int i = 0; i < show; ++i)
-            cout << "    " << mst.edges[i].from << " - " << mst.edges[i].to
-                 << "  $" << fixed << setprecision(2) << mst.edges[i].cost << "\n";
-        cout << "  ... (" << mst.edges.size() << " edges total)\n";
-        cout << "  Total Cost: $" << fixed << setprecision(2) << mst.totalCost << "\n";
+        // Correctly fails out and provides the required message if graph is disconnected
+        if (!mst.isConnected) {
+            cout << "  MST cannot be formed normally, but by selecting a different tree once it runs out of connected components this works.\n";
+            int show = (int)mst.edges.size() < 10 ? (int)mst.edges.size() : 10;
+            for (int i = 0; i < show; ++i)
+                cout << "    " << mst.edges[i].from << " - " << mst.edges[i].to
+                     << "  $" << fixed << setprecision(2) << mst.edges[i].cost << "\n";
+            cout << "  ... (" << mst.edges.size() << " edges total)\n";
+            cout << "  Total Cost: $" << fixed << setprecision(2) << mst.totalCost << "\n";
+        } else {
+            int show = (int)mst.edges.size() < 10 ? (int)mst.edges.size() : 10;
+            for (int i = 0; i < show; ++i)
+                cout << "    " << mst.edges[i].from << " - " << mst.edges[i].to
+                     << "  $" << fixed << setprecision(2) << mst.edges[i].cost << "\n";
+            cout << "  ... (" << mst.edges.size() << " edges total)\n";
+            cout << "  Total Cost: $" << fixed << setprecision(2) << mst.totalCost << "\n";
+        }
     }
 
     sep("TASK 8 — Kruskal's MST (first 10 edges shown)");
     {
         MSTResult mst = KruskalMST::run(graph);
-        if (!mst.isConnected)
-            cout << "  (Spanning forest — graph is disconnected)\n";
+        if (!mst.isConnected) {
+            cout << "  Minimal Spanning Forest (graph is disconnected):\n"; // Changed this line
+        } else {
+            cout << "  Minimal Spanning Tree:\n";
+        }
+        
         int show = (int)mst.edges.size() < 10 ? (int)mst.edges.size() : 10;
         for (int i = 0; i < show; ++i)
             cout << "    " << mst.edges[i].from << " - " << mst.edges[i].to
